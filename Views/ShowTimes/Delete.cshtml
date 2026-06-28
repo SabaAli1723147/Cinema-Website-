@@ -15,13 +15,13 @@
             @Html.DisplayNameFor(model => model.Movie)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Movie.MovieID)
+            @Model.Movie.Title
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Hall)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Hall.HallID)
+            @Model.Hall.HallName
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Date)
@@ -50,8 +50,13 @@
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="ShowTimeID" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit"
+               value="Delete"
+               class="btn btn-danger" />
+
+        <a asp-action="Index"
+               class="btn btn-secondary">
+            Back
+        </a>
     </form>
 </div>

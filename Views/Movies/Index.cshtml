@@ -4,18 +4,27 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-<form asp-action="Index" method="get">
-    <div class="form-group">
-        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]"
-               placeholder="Search by title or genre..." class="form-control" />
-        <input type="submit" value="Search" class="btn btn-primary mt-2" />
+<h1 class="mb-4">Movies</h1>
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text"
+               name="searchString"
+               value="@ViewData["CurrentFilter"]"
+               class="form-control"
+               placeholder="Search by title or genre..." />
+
+        <button type="submit" class="btn btn-outline-primary">
+            Search
+        </button>
     </div>
 </form>
+
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">
+        + Create Movie
+    </a>
 </p>
-<table class="table">
+<table class="table table-bordered table-striped table-hover">
     <thead>
         <tr>
             <th>
@@ -49,9 +58,23 @@
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.MovieID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.MovieID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.MovieID">Delete</a>
+                    <a asp-action="Edit"
+                           asp-route-id="@item.MovieID"
+                           class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <a asp-action="Details"
+                           asp-route-id="@item.MovieID"
+                           class="btn btn-info btn-sm text-white">
+                        Details
+                    </a>
+
+                    <a asp-action="Delete"
+                           asp-route-id="@item.MovieID"
+                           class="btn btn-danger btn-sm">
+                        Delete
+                    </a>
             </td>
         </tr>
 }

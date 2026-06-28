@@ -14,13 +14,13 @@
             @Html.DisplayNameFor(model => model.Movie)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Movie.MovieID)
+            @Model.Movie.Title
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Hall)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Hall.HallID)
+            @Model.Hall.HallName
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Date)
@@ -48,7 +48,9 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ShowTimeID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="mt-3">
+    <a asp-action="Index"
+           class="btn btn-secondary">
+        Back
+    </a>
 </div>

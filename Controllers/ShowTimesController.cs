@@ -60,8 +60,15 @@ namespace CinemaBookingApp.Controllers
         // GET: ShowTimes/Create
         public IActionResult Create()
         {
-            ViewData["HallID"] = new SelectList(_context.CinemaHalls, "HallID", "HallID");
-            ViewData["MovieID"] = new SelectList(_context.Movies, "MovieID", "MovieID");
+            ViewData["MovieID"] =
+    new SelectList(_context.Movies,
+                   "MovieID",
+                   "Title");
+
+            ViewData["HallID"] =
+                new SelectList(_context.CinemaHalls,
+                               "HallID",
+                               "HallName");
             return View();
         }
 
@@ -78,8 +85,15 @@ namespace CinemaBookingApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HallID"] = new SelectList(_context.CinemaHalls, "HallID", "HallID", showTime.HallID);
-            ViewData["MovieID"] = new SelectList(_context.Movies, "MovieID", "MovieID", showTime.MovieID);
+            ViewData["MovieID"] =
+    new SelectList(_context.Movies,
+                   "MovieID",
+                   "Title");
+
+            ViewData["HallID"] =
+                new SelectList(_context.CinemaHalls,
+                               "HallID",
+                               "HallName");
             return View(showTime);
         }
 
@@ -96,8 +110,15 @@ namespace CinemaBookingApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["HallID"] = new SelectList(_context.CinemaHalls, "HallID", "HallID", showTime.HallID);
-            ViewData["MovieID"] = new SelectList(_context.Movies, "MovieID", "MovieID", showTime.MovieID);
+            ViewData["MovieID"] =
+    new SelectList(_context.Movies,
+                   "MovieID",
+                   "Title");
+
+            ViewData["HallID"] =
+                new SelectList(_context.CinemaHalls,
+                               "HallID",
+                               "HallName");
             return View(showTime);
         }
 
@@ -133,8 +154,15 @@ namespace CinemaBookingApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HallID"] = new SelectList(_context.CinemaHalls, "HallID", "HallID", showTime.HallID);
-            ViewData["MovieID"] = new SelectList(_context.Movies, "MovieID", "MovieID", showTime.MovieID);
+            ViewData["MovieID"] =
+    new SelectList(_context.Movies,
+                   "MovieID",
+                   "Title");
+
+            ViewData["HallID"] =
+                new SelectList(_context.CinemaHalls,
+                               "HallID",
+                               "HallName");
             return View(showTime);
         }
 
