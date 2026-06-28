@@ -1,0 +1,49 @@
+﻿@model CinemaBookingApp.Models.CinemaHall
+
+@{
+    ViewData["Title"] = "Delete Hall";
+}
+
+<h1>Delete Hall</h1>
+
+<h4 class="text-danger">
+    Are you sure you want to delete this hall?
+</h4>
+
+<hr />
+
+<dl class="row">
+
+    <dt class="col-sm-3">
+        Hall Name
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.HallName
+    </dd>
+
+    <dt class="col-sm-3">
+        Capacity
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Capacity
+    </dd>
+
+</dl>
+
+<form asp-action="Delete">
+
+    <input type="hidden"
+           asp-for="HallID" />
+
+    <input type="submit"
+           value="Delete"
+           class="btn btn-danger" />
+
+    <a asp-action="Index"
+           class="btn btn-secondary">
+        Cancel
+    </a>
+
+</form>

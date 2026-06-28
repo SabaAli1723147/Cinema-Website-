@@ -1,0 +1,71 @@
+﻿@model IEnumerable<CinemaBookingApp.Models.Seat>
+
+@{
+    ViewData["Title"] = "Seats";
+}
+
+<h1>Seats</h1>
+
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-primary">
+        Create New Seat
+    </a>
+</div>
+
+<table class="table table-bordered table-striped">
+
+    <thead>
+        <tr>
+            <th>Seat ID</th>
+            <th>Hall</th>
+            <th>Seat Number</th>
+            <th>Seat Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>@item.SeatID</td>
+
+                <td>@item.Hall.HallName</td>
+
+                <td>@item.SeatNumber</td>
+
+                <td>@item.SeatType</td>
+
+                <td>@item.Status</td>
+
+                <td>
+
+                    <a asp-action="Details"
+                           asp-route-id="@item.SeatID"
+                           class="btn btn-info btn-sm">
+                        Details
+                    </a>
+
+                    <a asp-action="Edit"
+                           asp-route-id="@item.SeatID"
+                           class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <a asp-action="Delete"
+                           asp-route-id="@item.SeatID"
+                           class="btn btn-danger btn-sm">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

@@ -1,0 +1,50 @@
+﻿@model CinemaBookingApp.Models.Seat
+
+@{
+    ViewData["Title"] = "Seat Details";
+}
+
+<h1>Seat Details</h1>
+
+<hr />
+
+<dl class="row">
+
+    <dt class="col-sm-3">
+        Hall
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Hall.HallName
+    </dd>
+
+    <dt class="col-sm-3">
+        Seat Number
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.SeatNumber
+    </dd>
+
+    <dt class="col-sm-3">
+        Seat Type
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.SeatType
+    </dd>
+
+    <dt class="col-sm-3">
+        Status
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Status
+    </dd>
+
+</dl>
+
+<a asp-action="Index"
+       class="btn btn-secondary">
+    Back
+</a>

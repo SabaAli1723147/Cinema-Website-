@@ -1,0 +1,62 @@
+﻿@model CinemaBookingApp.Models.Seat
+
+@{
+    ViewData["Title"] = "Create Seat";
+}
+
+<h1>Create Seat</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-5">
+
+        <form asp-action="Create">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="HallID" class="form-label"></label>
+                <select asp-for="HallID"
+                        class="form-select"
+                        asp-items="ViewBag.HallID">
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SeatNumber" class="form-label"></label>
+                <input asp-for="SeatNumber" class="form-control" />
+                <span asp-validation-for="SeatNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SeatType" class="form-label"></label>
+                <input asp-for="SeatType" class="form-control" />
+                <span asp-validation-for="SeatType" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Status" class="form-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Create
+            </button>
+
+            <a asp-action="Index"
+                   class="btn btn-secondary">
+                Back
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

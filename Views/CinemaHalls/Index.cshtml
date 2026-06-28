@@ -1,0 +1,105 @@
+﻿@model IEnumerable<CinemaBookingApp.Models.CinemaHall>
+
+@{
+    ViewData["Title"] = "Cinema Halls";
+}
+
+<h1>Cinema Halls</h1>
+
+<form asp-action="Index" method="get">
+
+    <div class="row mb-3">
+
+        <div class="col-md-4">
+
+            <input type="text"
+                   name="searchString"
+                   class="form-control"
+                   placeholder="Search Hall Name"
+                   value="@Context.Request.Query["searchString"]" />
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
+
+<div class="mb-3">
+    <a asp-action="Create"
+           class="btn btn-primary">
+        Create New Hall
+    </a>
+</div>
+
+<table class="table table-bordered table-striped">
+
+    <thead>
+
+        <tr>
+
+            <th>Hall ID</th>
+
+            <th>Hall Name</th>
+
+            <th>Capacity</th>
+
+            <th>Actions</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @item.HallID
+                </td>
+
+                <td>
+                    @item.HallName
+                </td>
+
+                <td>
+                    @item.Capacity
+                </td>
+
+                <td>
+
+                    <a asp-action="Details"
+                           asp-route-id="@item.HallID"
+                           class="btn btn-info btn-sm">
+                        Details
+                    </a>
+
+                    <a asp-action="Edit"
+                           asp-route-id="@item.HallID"
+                           class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+
+                    <a asp-action="Delete"
+                           asp-route-id="@item.HallID"
+                           class="btn btn-danger btn-sm">
+                        Delete
+                    </a>
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
