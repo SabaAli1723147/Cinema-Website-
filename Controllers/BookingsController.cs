@@ -72,7 +72,7 @@ namespace CinemaBookingApp.Controllers
             {
                 _context.Add(booking);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Payment", "Bookings");
             }
             ViewData["ShowTimeID"] = new SelectList(_context.ShowTimes, "ShowTimeID", "ShowTimeID", booking.ShowTimeID);
             return View(booking);
@@ -180,7 +180,32 @@ namespace CinemaBookingApp.Controllers
 
             return View(showTime);
         }
+        // Customer Booking Summary
+        public async Task<IActionResult> BookingSummary(int id)
+        {
+            var showTime = await _context.ShowTimes
+                .Include(s => s.Movie)
+                .Include(s => s.Hall)
+                .FirstOrDefaultAsync(s => s.ShowTimeID == id);
 
+            if (showTime == null)
+            {
+                return NotFound();
+            }
+
+            return View(showTime);
+        }
+        // GET: Payment Page
+        public IActionResult Payment()
+        {
+            return View();
+        }
+
+        // GET: Ticket Page
+        public IActionResult Ticket()
+        {
+            return View();
+        }
         private bool BookingExists(int id)
         {
             return _context.Bookings.Any(e => e.BookingID == id);

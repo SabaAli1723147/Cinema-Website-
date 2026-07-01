@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Payment";
+}
+
+<div style="
+    background:url('/images/Py-6.jpg') no-repeat center center;
+    background-size:cover;
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px;">
+
+    <div class="card shadow-lg"
+         style="
+        width:500px;
+        background:rgba(28,22,60,.92);
+        border:2px solid #ff3b3b;
+        border-radius:18px;
+        color:white;
+        padding:35px;">
+
+        <h2 class="text-center mb-4">
+            Payment
+        </h2>
+
+        <hr style="border-color:#ff3b3b;" />
+
+        <div class="mb-4">
+
+            <label class="form-label fw-bold">
+                Total Amount
+            </label>
+
+            <input type="text"
+                   class="form-control"
+                   value="$250"
+                   readonly />
+
+        </div>
+
+        <div class="mb-4">
+
+            <label class="form-label fw-bold">
+                Payment Method
+            </label>
+
+            <select class="form-select">
+
+                <option selected disabled>
+                    Select Payment Method
+                </option>
+
+                <option>
+                    Credit Card
+                </option>
+
+                <option>
+                    PayPal
+                </option>
+
+                <option>
+                    Cash
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="text-center mt-4">
+
+            <a asp-action="Ticket"
+                   class="btn btn-danger btn-lg w-100">
+
+                Pay Now
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
