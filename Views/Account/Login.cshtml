@@ -1,0 +1,270 @@
+﻿@model CinemaBookingApp.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login – Cinema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1600') center/cover no-repeat fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .login-card {
+            background: rgba(15, 15, 25, 0.92);
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 0 40px rgba(229, 9, 20, 0.15);
+        }
+
+        .cinema-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+            .cinema-logo i {
+                font-size: 3rem;
+                color: #e50914;
+            }
+
+            .cinema-logo h2 {
+                color: #fff;
+                font-size: 1.8rem;
+                font-weight: 700;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                margin-top: 8px;
+            }
+
+            .cinema-logo p {
+                color: #aaa;
+                font-size: 0.85rem;
+                margin-top: 4px;
+            }
+
+        .form-label {
+            color: #ccc;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: #fff;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+            .form-control:focus {
+                background: rgba(255,255,255,0.1);
+                border-color: #e50914;
+                box-shadow: 0 0 0 3px rgba(229,9,20,0.15);
+                color: #fff;
+            }
+
+            .form-control::placeholder {
+                color: #666;
+            }
+
+        .input-group-text {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-right: none;
+            color: #888;
+        }
+
+        .btn-login {
+            background: #e50914;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 13px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+            .btn-login:hover {
+                background: #b8070f;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 15px rgba(229,9,20,0.4);
+            }
+
+        .form-check-label {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        .form-check-input:checked {
+            background-color: #e50914;
+            border-color: #e50914;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+            .divider::before, .divider::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                width: 42%;
+                height: 1px;
+                background: rgba(255,255,255,0.1);
+            }
+
+            .divider::before {
+                left: 0;
+            }
+
+            .divider::after {
+                right: 0;
+            }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+            .register-link a {
+                color: #e50914;
+                text-decoration: none;
+                font-weight: 600;
+            }
+
+                .register-link a:hover {
+                    text-decoration: underline;
+                }
+
+        .back-home {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+            .back-home a {
+                color: #666;
+                font-size: 0.85rem;
+                text-decoration: none;
+                transition: color 0.3s;
+            }
+
+                .back-home a:hover {
+                    color: #aaa;
+                }
+
+        .alert-danger {
+            background: rgba(229,9,20,0.1);
+            border: 1px solid rgba(229,9,20,0.3);
+            color: #ff6b6b;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        .text-danger {
+            color: #ff6b6b !important;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="cinema-logo">
+            <i class="fas fa-film"></i>
+            <h2>Cinema</h2>
+            <p>Your Ultimate Movie Experience</p>
+        </div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var error in ViewData.ModelState.Values
+                            .SelectMany(v => v.Errors))
+                {
+                    <div>@error.ErrorMessage</div>
+                }
+            </div>
+        }
+
+        <form asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="fas fa-envelope me-1"></i> Email Address
+                </label>
+                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    <i class="fas fa-lock me-1"></i> Password
+                </label>
+                <input asp-for="Password" class="form-control" placeholder="Enter your password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                    <input asp-for="RememberMe" class="form-check-input" type="checkbox" />
+                    <label class="form-check-label">Remember me</label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt me-2"></i> LOGIN
+            </button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <div class="register-link">
+            Don't have an account?
+            <a asp-action="Register">Create one here</a>
+        </div>
+
+        <div class="back-home">
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fas fa-arrow-left me-1"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

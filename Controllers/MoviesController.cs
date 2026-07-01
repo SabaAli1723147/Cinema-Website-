@@ -44,12 +44,13 @@ namespace CinemaBookingApp.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.Movies
-                .FirstOrDefaultAsync(m => m.MovieID == id);
-            if (movie == null)
-            {
-                return NotFound();
-            }
+             var movie = await _context.Movies
+                 .FirstOrDefaultAsync(m => m.MovieID == id);
+             if (movie == null)
+             {
+                 return NotFound();
+             }
+            ViewBag.ShowTimes = await _context.ShowTimes.Include(s => s.Hall).Where(s => s.MovieID == id).OrderBy(s => s.Date).ThenBy(s => s.Time).ToListAsync();
 
             return View(movie);
         }
