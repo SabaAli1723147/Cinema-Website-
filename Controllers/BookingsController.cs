@@ -165,6 +165,22 @@ namespace CinemaBookingApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // Customer Seat Selection
+        public async Task<IActionResult> SelectSeat(int id)
+        {
+            var showTime = await _context.ShowTimes
+                .Include(s => s.Movie)
+                .Include(s => s.Hall)
+                .FirstOrDefaultAsync(s => s.ShowTimeID == id);
+
+            if (showTime == null)
+            {
+                return NotFound();
+            }
+
+            return View(showTime);
+        }
+
         private bool BookingExists(int id)
         {
             return _context.Bookings.Any(e => e.BookingID == id);
