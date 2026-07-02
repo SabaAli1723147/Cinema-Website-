@@ -1,0 +1,360 @@
+﻿@model List<CinemaBookingApp.Models.Booking>
+@{
+    ViewData["Title"] = "My Bookings";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>My Bookings - Cinema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body {
+            background: #0a0a0f;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+        }
+
+        .navbar-cinema {
+            background: #111;
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid #1e1e2a;
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .navbar-logo {
+            color: #e50914;
+            font-weight: 900;
+            font-size: 1.4rem;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .navbar-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-right: 24px;
+            transition: color 0.2s;
+        }
+
+            .navbar-links a:hover {
+                color: #fff;
+            }
+
+            .navbar-links a.active {
+                color: #e50914;
+                font-weight: 600;
+            }
+
+        .user-menu {
+            position: relative;
+        }
+
+        .user-icon-btn {
+            background: #1e1e2a;
+            border: 1px solid #2a2a38;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #ccc;
+            font-size: 1.1rem;
+        }
+
+            .user-icon-btn:hover {
+                background: #e50914;
+                border-color: #e50914;
+                color: #fff;
+            }
+
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: #16161f;
+            border: 1px solid #2a2a38;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .user-menu:hover .user-dropdown {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            background: #1e1e2a;
+            border-bottom: 1px solid #2a2a38;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+            .dropdown-header strong {
+                color: #fff;
+                display: block;
+                font-size: 0.95rem;
+            }
+
+        .dropdown-item-custom {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.15s;
+        }
+
+            .dropdown-item-custom:hover {
+                background: #1e1e2a;
+                color: #fff;
+            }
+
+            .dropdown-item-custom i {
+                width: 16px;
+                color: #888;
+            }
+
+        .dropdown-divider {
+            border-top: 1px solid #2a2a38;
+            margin: 0;
+        }
+
+        .dropdown-logout {
+            width: 100%;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+            .dropdown-logout:hover {
+                background: #1e1e2a;
+            }
+
+        .page-wrap {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .booking-card {
+            background: #16161f;
+            border: 1px solid #2a2a35;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .booking-movie {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .booking-meta {
+            color: #999;
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+            .booking-meta i {
+                width: 16px;
+                color: #e50914;
+            }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-confirmed {
+            background: rgba(40,167,69,0.15);
+            color: #28a745;
+            border: 1px solid #28a745;
+        }
+
+        .status-pending {
+            background: rgba(255,193,7,0.15);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .status-cancelled {
+            background: rgba(220,53,69,0.15);
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        .booking-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #e50914;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #555;
+        }
+
+            .empty-state i {
+                font-size: 3rem;
+                margin-bottom: 16px;
+            }
+
+        .btn-browse {
+            background: #e50914;
+            color: #fff;
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 16px;
+            transition: background 0.2s;
+        }
+
+            .btn-browse:hover {
+                background: #b8070f;
+                color: #fff;
+            }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar-cinema">
+        <div class="navbar-left">
+            <a asp-controller="Home" asp-action="Index" class="navbar-logo">
+                <i class="fas fa-film"></i> CINEMA
+            </a>
+            <div class="navbar-links">
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Bookings" asp-action="MyBookings" class="active">My Bookings</a>
+                }
+            </div>
+        </div>
+        <div class="user-menu">
+            <div class="user-icon-btn"><i class="fas fa-user"></i></div>
+            <div class="user-dropdown">
+                <div class="dropdown-header">
+                    Signed in as
+                    <strong>@User.Identity.Name</strong>
+                </div>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin" asp-action="Index" class="dropdown-item-custom">
+                        <i class="fas fa-gauge"></i> Admin Dashboard
+                    </a>
+                    <div class="dropdown-divider"></div>
+                }
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="dropdown-logout">
+                        <i class="fas fa-right-from-bracket"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="page-title"><i class="fas fa-ticket-alt me-2"></i>My Bookings</div>
+        <div class="page-subtitle">All your cinema reservations in one place</div>
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var b in Model)
+            {
+                <div class="booking-card">
+                    <div>
+                        <div class="booking-movie">
+                            @(b.ShowTime?.Movie?.Title ?? "Movie")
+                        </div>
+                        <div class="booking-meta">
+                            <div><i class="fas fa-building"></i> @(b.ShowTime?.Hall?.HallName ?? "Hall TBA")</div>
+                            <div><i class="fas fa-calendar"></i> @b.ShowTime?.Date.ToString("ddd, MMM d yyyy")</div>
+                            <div><i class="fas fa-clock"></i> @b.ShowTime?.Time.ToString(@"hh\:mm")</div>
+                            <div><i class="fas fa-calendar-check"></i> Booked on @b.BookingDate.ToString("MMM d, yyyy")</div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="booking-price">@b.TotalPrice.ToString("0.00") $</div>
+                        <div class="mt-2">
+                            @{
+                                var statusClass = b.Status == "Confirmed" ? "status-confirmed" :
+                                b.Status == "Pending" ? "status-pending" : "status-cancelled";
+                            }
+                            <span class="status-badge @statusClass">@b.Status</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <i class="fas fa-ticket-alt"></i>
+                <p>You haven't booked any movies yet.</p>
+                <a asp-controller="Home" asp-action="Index" class="btn-browse">
+                    <i class="fas fa-film me-2"></i>Browse Movies
+                </a>
+            </div>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

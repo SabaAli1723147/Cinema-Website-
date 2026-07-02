@@ -1,179 +1,430 @@
-﻿@model List<CinemaBookingApp.Models.Movie>
-
+﻿@using System.Linq
+@model List<CinemaBookingApp.Models.Movie>
 @{
+    ViewData["Title"] = "Home";
+    Layout = null;
 
-	ViewData["Title"] = "Home";
-
-	Layout = null;
-
+    var posters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Spider-Man: No Way Home", "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" },
+        { "The Lion King", "https://image.tmdb.org/t/p/w500/2bXbqYdUdNVa8VIWXVfclP2ICtT.jpg" },
+        { "Inception", "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg" },
+        { "The Dark Knight", "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" }
+    };
 }
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<title>Cinema - Home</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <meta charset="utf-8" />
+    <title>Cinema - Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body {
+            background: #0a0a0f;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+        }
 
-	<style>
+        /* ── NAVBAR ── */
+        .navbar-cinema {
+            background: #111;
+            padding: 0 40px;
+            height: 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid #1e1e2a;
+        }
 
-		body {
-			background: #0a0a0f;
-			color: #fff;
-			font-family: 'Segoe UI', sans-serif;
-		}
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
 
-		.navbar-cinema {
-			background: #111;
-			padding: 16px 40px;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-		}
+        .navbar-logo {
+            color: #e50914;
+            font-weight: 900;
+            font-size: 1.4rem;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
 
-			.navbar-cinema .logo {
-				color: #e50914;
-				font-weight: 900;
-				font-size: 1.4rem;
-			}
+        .navbar-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-right: 24px;
+            transition: color 0.2s;
+        }
 
-			.navbar-cinema a {
-				color: #ccc;
-				text-decoration: none;
-				margin-left: 20px;
-			}
+            .navbar-links a:hover {
+                color: #fff;
+            }
 
-				.navbar-cinema a:hover {
-					color: #fff;
-				}
+            .navbar-links a.active {
+                color: #e50914;
+                font-weight: 600;
+            }
 
-		.hero {
-			padding: 60px 40px 30px;
-			text-align: center;
-		}
+        /* ── USER ICON DROPDOWN ── */
+        .user-menu {
+            position: relative;
+        }
 
-			.hero h1 {
-				font-weight: 800;
-				font-size: 2.2rem;
-			}
+        .user-icon-btn {
+            background: #1e1e2a;
+            border: 1px solid #2a2a38;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #ccc;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
 
-			.hero p {
-				color: #999;
-			}
+            .user-icon-btn:hover {
+                background: #e50914;
+                border-color: #e50914;
+                color: #fff;
+            }
 
-		.movie-grid {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
-			gap: 24px;
-			padding: 20px 40px 60px;
-		}
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: #16161f;
+            border: 1px solid #2a2a38;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            z-index: 1000;
+        }
 
-		.movie-card {
-			background: #16161f;
-			border-radius: 10px;
-			overflow: hidden;
-			transition: transform .2s;
-		}
+        .user-menu:hover .user-dropdown {
+            display: block;
+        }
 
-			.movie-card:hover {
-				transform: translateY(-5px);
-			}
+        .dropdown-header {
+            padding: 12px 16px;
+            background: #1e1e2a;
+            border-bottom: 1px solid #2a2a38;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
 
-			.movie-card .poster {
-				height: 240px;
-				background: linear-gradient(135deg,#e50914,#5a0509);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				font-size: 2.5rem;
-			}
+            .dropdown-header strong {
+                color: #fff;
+                display: block;
+                font-size: 0.95rem;
+            }
 
-			.movie-card .info {
-				padding: 14px;
-			}
+        .dropdown-item-custom {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.15s;
+        }
 
-			.movie-card h5 {
-				font-size: 1rem;
-				margin-bottom: 4px;
-			}
+            .dropdown-item-custom:hover {
+                background: #1e1e2a;
+                color: #fff;
+            }
 
-			.movie-card .meta {
-				color: #888;
-				font-size: .8rem;
-			}
-		
-			.btn-book {
-			background: #e50914;
-			border: none;
-			color: #fff;
-			width: 100%;
-			padding: 8px;
-			border-radius: 6px;
-			margin-top: 10px;
-			font-weight: 600;
-		}
-			
-		.btn-book:hover {
-				background: #b8070f;
-				color: #fff;
-			}
-		
-			.empty-state {
-			text-align: center;
-			padding: 60px;
-			color: #888;
-		}
-	</style>
+            .dropdown-item-custom i {
+                width: 16px;
+                color: #888;
+            }
+
+            .dropdown-item-custom:hover i {
+                color: #e50914;
+            }
+
+        .dropdown-divider {
+            border-top: 1px solid #2a2a38;
+            margin: 0;
+        }
+
+        .dropdown-logout {
+            width: 100%;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+            .dropdown-logout:hover {
+                background: #1e1e2a;
+            }
+
+            .dropdown-logout i {
+                width: 16px;
+            }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 60px 40px 30px;
+            text-align: center;
+        }
+
+            .hero h1 {
+                font-weight: 800;
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                color: #999;
+            }
+
+        /* ── MOVIE GRID ── */
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px;
+            padding: 20px 40px 60px;
+        }
+
+        .movie-card {
+            background: #16161f;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+            .movie-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 12px 30px rgba(229,9,20,0.2);
+            }
+
+            .movie-card .poster {
+                height: 280px;
+                overflow: hidden;
+                position: relative;
+            }
+
+                .movie-card .poster img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: transform 0.3s;
+                }
+
+            .movie-card:hover .poster img {
+                transform: scale(1.05);
+            }
+
+        .poster-fallback {
+            height: 280px;
+            background: linear-gradient(135deg, #e50914, #5a0509);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .movie-card .info {
+            padding: 14px;
+        }
+
+        .movie-card h5 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .movie-card .meta {
+            color: #888;
+            font-size: .8rem;
+        }
+
+        .btn-book {
+            background: #e50914;
+            border: none;
+            color: #fff;
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-weight: 600;
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+            .btn-book:hover {
+                background: #b8070f;
+                color: #fff;
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-	<div class="navbar-cinema">
-		<div class="logo"><i class="fas fa-film"></i> CINEMA</div>
-		<div>
-			@if (User.Identity.IsAuthenticated)
-			{
-				<span class="me-3">Hi, @User.Identity.Name</span>
-				<form asp-controller="Account" asp-action="Logout" method="post" style="display:inline">
 
-					@Html.AntiForgeryToken()
+    <!-- NAVBAR -->
+    <nav class="navbar-cinema">
 
-					<button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
-				</form>
-			}
-			else
-			{
-				<a asp-controller="Account" asp-action="Login">Login</a>
-				<a asp-controller="Account" asp-action="Register">Register</a>
-			}
-		</div>
-	</div>
-	<div class="hero">
-		<h1>Now Showing</h1>
-		<p>Book your favorite movies in just a few clicks</p>
-	</div>
-	@if (Model != null && Model.Any())
-	{
-		<div class="movie-grid">
-			@foreach (var movie in Model)
-			{
-				<div class="movie-card">
-					<div class="poster"><i class="fas fa-clapperboard"></i></div>
-					<div class="info">
-						<h5>@movie.Title</h5>
-						<div class="meta">@movie.Genre &middot; Age @movie.AgeLimit+</div>
-						<a asp-controller="Movies" asp-action="Details" asp-route-id="@movie.MovieID" 
-						    class="btn-book" style="display:block;text-align:center;text-decoration:none;">View Showtimes</a>
-					</div>
-				</div>
-			}
-		</div>
-	}
-	else
-	{
-		<div class="empty-state">
-			<i class="fas fa-film fa-2x mb-3"></i>
-			<p>No movies available yet. Check back soon!</p>
-		</div>
-	}
+        <!-- LEFT: Logo + Links -->
+        <div class="navbar-left">
+            <a asp-controller="Home" asp-action="Index" class="navbar-logo">
+                <i class="fas fa-film"></i> CINEMA
+            </a>
+            <div class="navbar-links">
+                <a asp-controller="Home" asp-action="Index" class="active">Home</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
+                }
+            </div>
+        </div>
+
+        <!-- RIGHT: User Icon -->
+        <div class="user-menu">
+            <div class="user-icon-btn">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-dropdown">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown-header">
+                        Signed in as
+                        <strong>@User.Identity.Name</strong>
+                    </div>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Admin" asp-action="Index" class="dropdown-item-custom">
+                            <i class="fas fa-gauge"></i> Admin Dashboard
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    }
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="dropdown-logout">
+                            <i class="fas fa-right-from-bracket"></i> Logout
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="dropdown-header">Welcome, Guest</div>
+                    <a asp-controller="Account" asp-action="Login" class="dropdown-item-custom">
+                        <i class="fas fa-right-to-bracket"></i> Login
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a asp-controller="Account" asp-action="Register" class="dropdown-item-custom">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                }
+            </div>
+        </div>
+
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <h1>Now Showing</h1>
+        <p>Book your favorite movies in just a few clicks</p>
+    </div>
+    <div class="container my-3">
+        <form asp-controller="Home" asp-action="Index" method="get" class="p-2 rounded-3 shadow mx-auto" style="background-color: #1a1a2e; border: 1px solid rgba(255, 45, 85, 0.3); max-width: 75px; max-width: 800px;">
+            <div class="row g-2 align-items-center">
+
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text text-danger py-0 border-secondary" style="background-color: #2a2145; height: 32px; font-size: 13px;"><i class="fas fa-search"></i></span>
+                        <input type="text" name="searchString" value="@ViewBag.CurrentSearch" class="form-control text-white border-secondary bg-transparent py-0"
+                               placeholder="Search movie..." style="box-shadow: none; height: 32px; font-size: 13px; background-color: #2a2145 !important;" />
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text text-danger py-0 border-secondary" style="background-color: #2a2145; height: 32px; font-size: 13px;"><i class="fas fa-calendar-day"></i></span>
+                        <input type="date" name="movieDate" value="@ViewBag.CurrentDate" class="form-control text-white border-secondary bg-transparent py-0 text-uppercase"
+                               style="color-scheme: dark; box-shadow: none; height: 32px; font-size: 13px; background-color: #2a2145 !important;" />
+                    </div>
+                </div>
+
+                <div class="col-md-3 d-flex gap-1">
+                    <button type="submit" class="btn btn-danger fw-bold py-0 flex-grow-1" style="background-color: #ff2d55; height: 32px; font-size: 13px; border-radius: 5px;">
+                        Filter
+                    </button>
+                    @if (!string.IsNullOrEmpty(ViewBag.CurrentSearch) || !string.IsNullOrEmpty(ViewBag.CurrentDate))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-secondary d-flex align-items-center justify-content-center py-0" style="width: 35px; height: 32px; font-size: 13px; border-radius: 5px;">
+                            <i class="fas fa-rotate-left"></i>
+                        </a>
+                    }
+                </div>
+
+            </div>
+        </form>
+    </div>
+    </div>
+    <!-- MOVIES -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="movie-grid">
+            @foreach (var movie in Model)
+            {
+                <div class="movie-card">
+                    <div class="poster">
+                        @if (posters.ContainsKey(movie.Title))
+                        {
+                            <img src="@posters[movie.Title]" alt="@movie.Title" />
+                        }
+                        else
+                        {
+                            <div class="poster-fallback">
+                                <i class="fas fa-clapperboard"></i>
+                            </div>
+                        }
+                    </div>
+                    <div class="info">
+                        <h5>@movie.Title</h5>
+                        <div class="meta">@movie.Genre &middot; Age @movie.AgeLimit+</div>
+                        <a asp-controller="Movies" asp-action="Details"
+                           asp-route-id="@movie.MovieID" class="btn-book">
+                            View Showtimes
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-film fa-2x mb-3"></i>
+            <p>No movies available yet. Check back soon!</p>
+        </div>
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

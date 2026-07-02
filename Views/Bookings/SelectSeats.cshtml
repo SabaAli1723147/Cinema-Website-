@@ -1,14 +1,15 @@
-﻿@model CinemaBookingApp.Models.ShowTime
+﻿@model IEnumerable<CinemaBookingApp.Models.Seat>
 
-<link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 @{
     ViewData["Title"] = "Seat Selection";
+    // Pull the ShowTime data passed from the ViewBag in the Controller
+    var showTime = ViewBag.ShowTime as CinemaBookingApp.Models.ShowTime;
+    decimal ticketPrice = ViewBag.TicketPrice ?? 10;
 }
 
 <style>
-
     body {
         background-color: #121212;
         color: white;
@@ -58,7 +59,6 @@
         width: 55px;
         height: 45px;
         border-radius: 10px;
-        /* 🔴 border أحمر حسب طلبك */
         border: 2px solid #ff3b3b;
         font-size: 12px;
         font-weight: bold;
@@ -92,61 +92,59 @@
         font-size: 22px;
         font-weight: bold;
     }
-
 </style>
 
 <div class="container mt-5">
-
     <div class="card shadow-lg rounded-4">
-
         <div class="card-body p-4">
 
-            <h2 class="text-center mb-4 fw-bold">
-                🎟 Seat Selection
-            </h2>
+            @if (showTime != null)
+            {
+                <h2 class="text-center mb-2 fw-bold">🎬 @showTime.Movie.Title</h2>
+                <h5 class="text-center text-muted mb-4">🏛 @showTime.Hall.HallName | 📅 @showTime.Date.ToShortDateString() at @showTime.Time.ToString(@"hh\:mm")</h5>
+            }
+            else
+            {
+                <h2 class="text-center mb-4 fw-bold">🎟 Seat Selection</h2>
+            }
 
-            <!-- Legend -->
             <div class="d-flex justify-content-center gap-4 mb-4">
-
                 <span class="badge bg-secondary p-2">Available</span>
                 <span class="badge bg-success p-2">Selected</span>
                 <span class="badge bg-danger p-2">Reserved</span>
-
             </div>
 
-            <!-- Screen -->
             <div class="screen mb-5">
                 SCREEN
             </div>
 
-            <!-- Seats -->
             <div class="seat-container">
-
                 @for (int row = 0; row < 8; row++)
                 {
+                    char rowLetter = (char)('A' + row);
                     <div class="seat-row">
-
                         @for (int col = 1; col <= 10; col++)
                         {
+                            string seatNum = $"{rowLetter}{col}";
+                            // Look for matching seat data item from the DB model list
+                            var currentSeat = Model.FirstOrDefault(s => s.SeatNumber == seatNum);
+                            string seatStatusClass = currentSeat?.Status?.ToLower() == "reserved" ? "reserved" : "";
+
                             <button type="button"
-                                    class="seat btn"
-                                    data-seat="@((char)('A' + row))@col">
-
-                                @((char)('A' + row))@col
-
+                                    class="seat btn @seatStatusClass"
+                                    data-id="@(currentSeat?.SeatID ?? 0)"
+                                    data-seat="@seatNum"
+                                    @(seatStatusClass == "reserved" ? "disabled" : "")>
+                                @seatNum
                             </button>
                         }
-
                     </div>
                 }
-
             </div>
 
             <hr class="mt-5" />
 
-            <!-- Summary -->
             <div class="row mt-4">
-
                 <div class="col-md-4">
                     <h5><i class="bi bi-people-fill"></i> Selected Seats</h5>
                     <p id="selectedSeats">None</p>
@@ -161,55 +159,58 @@
                     <h5><i class="bi bi-currency-dollar"></i> Total Price</h5>
                     <p><strong><span id="totalPrice">0</span> LYD</strong></p>
                 </div>
-
             </div>
 
-            <div class="text-center mt-4">
+            <form asp-action="ConfirmBooking" method="post" class="text-center mt-4">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="showTimeId" value="@(showTime?.ShowTimeID ?? 0)" />
+                <input type="hidden" id="hiddenSeatId" name="seatId" value="" />
 
-                <button class="btn btn-success btn-lg px-5">
+                <button type="submit" id="btnConfirm" class="btn btn-success btn-lg px-5" disabled>
                     Confirm Booking
                 </button>
-
-            </div>
+            </form>
 
         </div>
     </div>
 </div>
 
 <script>
+    const ticketPrice = @ticketPrice;
 
-    const ticketPrice = 10;
-
-    const seats = document.querySelectorAll('.seat');
+    const seats = document.querySelectorAll('.seat:not(.reserved)');
     const selectedSeatsText = document.getElementById('selectedSeats');
     const ticketCountText = document.getElementById('ticketCount');
     const totalPriceText = document.getElementById('totalPrice');
+    const hiddenSeatIdInput = document.getElementById('hiddenSeatId');
+    const btnConfirm = document.getElementById('btnConfirm');
 
     seats.forEach(seat => {
-
         seat.addEventListener('click', function () {
-
-            if (this.classList.contains('reserved'))
-                return;
-
             this.classList.toggle('selected');
-
             updateSummary();
         });
     });
 
     function updateSummary() {
-
         const selected = document.querySelectorAll('.seat.selected');
 
+        // Map display strings
         const seatNumbers = [...selected].map(s => s.dataset.seat);
-
-        selectedSeatsText.textContent =
-            seatNumbers.length ? seatNumbers.join(', ') : 'None';
-
+        selectedSeatsText.textContent = seatNumbers.length ? seatNumbers.join(', ') : 'None';
         ticketCountText.textContent = seatNumbers.length;
-
         totalPriceText.textContent = seatNumbers.length * ticketPrice;
-    }
 
+        // Extract internal Database Primary Keys (SeatIDs)
+        const seatIds = [...selected].map(s => s.dataset.id);
+
+        if(seatIds.length > 0) {
+            // For now, passes the first selected seat ID to match your single seatId controller action parameter
+            hiddenSeatIdInput.value = seatIds[0];
+            btnConfirm.removeAttribute('disabled');
+        } else {
+            hiddenSeatIdInput.value = "";
+            btnConfirm.setAttribute('disabled', 'true');
+        }
+    }
 </script>

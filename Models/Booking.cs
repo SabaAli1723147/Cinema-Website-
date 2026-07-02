@@ -7,13 +7,16 @@ namespace CinemaBookingApp.Models
         public int BookingID { get; set; }
 
         public int ShowTimeID { get; set; }
-        public ShowTime? ShowTime { get; set; }
+        public ShowTime ShowTime { get; set; }
+
+        // Links booking to the logged-in user
+        public string? UserID { get; set; }
 
         public DateTime BookingDate { get; set; }
 
         [Column(TypeName = "decimal(8,2)")]
         public decimal TotalPrice { get; set; }
 
-        public string? Status { get; set; }
+        public string Status { get; set; }
     }
 }

@@ -1,10 +1,18 @@
-﻿@model CinemaBookingApp.Models.Movie
+﻿@using System.Linq
+@model CinemaBookingApp.Models.Movie
 @{
     ViewData["Title"] = Model.Title;
     Layout = null;
     var showTimes = ViewBag.ShowTimes as List<CinemaBookingApp.Models.ShowTime>;
-}
 
+    var posters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Spider-Man: No Way Home", "https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" },
+        { "The Lion King", "https://image.tmdb.org/t/p/w500/2bXbqYdUdNVa8VIWXVfclP2ICtT.jpg" },
+        { "Inception", "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg" },
+        { "The Dark Knight", "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg" }
+    };
+}
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,35 +25,176 @@
             background: #0a0a0f;
             color: #fff;
             font-family: 'Segoe UI', sans-serif;
+            margin: 0;
         }
 
+        /* NAVBAR */
         .navbar-cinema {
             background: #111;
-            padding: 16px 40px;
+            padding: 0 40px;
+            height: 64px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            border-bottom: 1px solid #1e1e2a;
         }
 
-            .navbar-cinema .logo {
-                color: #e50914;
-                font-weight: 900;
-                font-size: 1.4rem;
-                text-decoration: none;
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .navbar-logo {
+            color: #e50914;
+            font-weight: 900;
+            font-size: 1.4rem;
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .navbar-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.95rem;
+            margin-right: 24px;
+            transition: color 0.2s;
+        }
+
+            .navbar-links a:hover {
+                color: #fff;
             }
 
-            .navbar-cinema a {
-                color: #ccc;
-                text-decoration: none;
-                margin-left: 20px;
+        .user-menu {
+            position: relative;
+        }
+
+        .user-icon-btn {
+            background: #1e1e2a;
+            border: 1px solid #2a2a38;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #ccc;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+            .user-icon-btn:hover {
+                background: #e50914;
+                border-color: #e50914;
+                color: #fff;
+            }
+
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background: #16161f;
+            border: 1px solid #2a2a38;
+            border-radius: 10px;
+            min-width: 200px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .user-menu:hover .user-dropdown {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 12px 16px;
+            background: #1e1e2a;
+            border-bottom: 1px solid #2a2a38;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+            .dropdown-header strong {
+                color: #fff;
+                display: block;
+                font-size: 0.95rem;
+            }
+
+        .dropdown-item-custom {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.15s;
+        }
+
+            .dropdown-item-custom:hover {
+                background: #1e1e2a;
+                color: #fff;
+            }
+
+            .dropdown-item-custom i {
+                width: 16px;
+                color: #888;
+            }
+
+            .dropdown-item-custom:hover i {
+                color: #e50914;
+            }
+
+        .dropdown-divider {
+            border-top: 1px solid #2a2a38;
+            margin: 0;
+        }
+
+        .dropdown-logout {
+            width: 100%;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+            .dropdown-logout:hover {
+                background: #1e1e2a;
+            }
+
+        /* DETAILS */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #888;
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin: 24px 0 0 40px;
+            transition: color 0.2s;
+        }
+
+            .back-btn:hover {
+                color: #fff;
             }
 
         .detail-wrap {
-            max-width: 900px;
-            margin: 40px auto;
+            max-width: 950px;
+            margin: 30px auto;
             display: flex;
-            gap: 30px;
-            padding: 0 20px;
+            gap: 40px;
+            padding: 0 40px;
             flex-wrap: wrap;
         }
 
@@ -54,7 +203,22 @@
             height: 380px;
             border-radius: 12px;
             flex-shrink: 0;
-            background: linear-gradient(135deg,#e50914,#5a0509);
+            overflow: hidden;
+            position: relative;
+        }
+
+            .poster-lg img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 12px;
+            }
+
+        .poster-fallback {
+            width: 260px;
+            height: 380px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #e50914, #5a0509);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -68,23 +232,24 @@
 
             .detail-info h1 {
                 font-weight: 800;
+                margin-bottom: 12px;
             }
 
         .badge-meta {
             background: #16161f;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: .8rem;
+            font-size: .85rem;
             color: #ccc;
             margin-right: 8px;
             display: inline-block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .desc {
             color: #bbb;
             margin-top: 16px;
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
         .showtimes-section {
@@ -94,6 +259,7 @@
             .showtimes-section h5 {
                 font-weight: 700;
                 margin-bottom: 14px;
+                font-size: 1.1rem;
             }
 
         .showtime-card {
@@ -140,12 +306,29 @@
         .showtime-price {
             font-weight: 700;
             color: #e50914;
+            font-size: 1.05rem;
         }
 
         .no-showtimes {
             color: #888;
             padding: 14px 0;
         }
+
+        .login-hint {
+            background: rgba(229,9,20,0.08);
+            border: 1px solid rgba(229,9,20,0.2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+            .login-hint a {
+                color: #e50914;
+                text-decoration: none;
+                font-weight: 600;
+            }
 
         @@media (max-width: 700px) {
             .detail-wrap {
@@ -156,41 +339,115 @@
     </style>
 </head>
 <body>
-    <div class="navbar-cinema">
-        <a asp-controller="Home" asp-action="Index" class="logo"><i class="fas fa-film"></i> CINEMA</a>
-        <div>
-            @if (User.Identity.IsAuthenticated)
-            {
-                <span class="me-3">Hi, @User.Identity.Name</span>
-            }
-            else
-            {
-                <a asp-controller="Account" asp-action="Login">Login</a>
-            }
-        </div>
-    </div>
 
+    <!-- NAVBAR -->
+    <nav class="navbar-cinema">
+        <div class="navbar-left">
+            <a asp-controller="Home" asp-action="Index" class="navbar-logo">
+                <i class="fas fa-film"></i> CINEMA
+            </a>
+            <div class="navbar-links">
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
+                }
+            </div>
+        </div>
+        <div class="user-menu">
+            <div class="user-icon-btn"><i class="fas fa-user"></i></div>
+            <div class="user-dropdown">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown-header">
+                        Signed in as <strong>@User.Identity.Name</strong>
+                    </div>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Admin" asp-action="Index" class="dropdown-item-custom">
+                            <i class="fas fa-gauge"></i> Admin Dashboard
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    }
+                    <form asp-controller="Account" asp-action="Logout" method="post">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="dropdown-logout">
+                            <i class="fas fa-right-from-bracket"></i> Logout
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="dropdown-header">Welcome, Guest</div>
+                    <a asp-controller="Account" asp-action="Login" class="dropdown-item-custom">
+                        <i class="fas fa-right-to-bracket"></i> Login
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a asp-controller="Account" asp-action="Register" class="dropdown-item-custom">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <!-- BACK -->
+    <a asp-controller="Home" asp-action="Index" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
+    <!-- DETAILS -->
     <div class="detail-wrap">
-        <div class="poster-lg"><i class="fas fa-clapperboard"></i></div>
+
+        <!-- POSTER -->
+        @if (posters.ContainsKey(Model.Title))
+        {
+            <div class="poster-lg">
+                <img src="@posters[Model.Title]" alt="@Model.Title poster" />
+            </div>
+        }
+        else
+        {
+            <div class="poster-fallback">
+                <i class="fas fa-clapperboard"></i>
+            </div>
+        }
+
+        <!-- INFO -->
         <div class="detail-info">
             <h1>@Model.Title</h1>
             <div>
-                <span class="badge-meta">@Model.Genre</span>
-                <span class="badge-meta">Age @Model.AgeLimit+</span>
+                <span class="badge-meta"><i class="fas fa-film me-1"></i>@Model.Genre</span>
+                <span class="badge-meta"><i class="fas fa-user me-1"></i>Age @Model.AgeLimit+</span>
             </div>
             <p class="desc">@Model.Description</p>
 
             <div class="showtimes-section">
                 <h5><i class="fas fa-clock me-1"></i> Select a Showtime</h5>
 
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    <div class="login-hint">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Please <a asp-controller="Account" asp-action="Login">login</a>
+                        to book a ticket.
+                    </div>
+                }
+
                 @if (showTimes != null && showTimes.Any())
                 {
                     foreach (var st in showTimes)
                     {
-                        <a asp-controller="Bookings" asp-action="SelectSeats" asp-route-showTimeId="@st.ShowTimeID" class="showtime-card">
+                        <a asp-controller="Bookings" asp-action="SelectSeats"
+                           asp-route-showTimeId="@st.ShowTimeID" class="showtime-card">
                             <div class="showtime-left">
-                                <span class="showtime-hall">@(st.Hall != null ? st.Hall.HallName : "Hall TBA")</span>
-                                <span class="showtime-meta">@st.Date.ToString("ddd, MMM d") &middot; @st.Time.ToString(@"hh\:mm")</span>
+                                <span class="showtime-hall">
+                                    <i class="fas fa-building me-1"></i>
+                                    @(st.Hall != null ? st.Hall.HallName : "Hall TBA")
+                                </span>
+                                <span class="showtime-meta">
+                                    @st.Date.ToString("ddd, MMM d") &middot; @st.Time.ToString(@"hh\:mm")
+                                </span>
                             </div>
                             <div class="showtime-right">
                                 <span class="showtime-price">@st.Price.ToString("0.00") $</span>
@@ -201,10 +458,15 @@
                 }
                 else
                 {
-                    <div class="no-showtimes">No showtimes scheduled yet for this movie.</div>
+                    <div class="no-showtimes">
+                        <i class="fas fa-calendar-xmark me-2"></i>
+                        No showtimes scheduled yet for this movie.
+                    </div>
                 }
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,7 +1,8 @@
-﻿@model CinemaBookingApp.Models.ShowTime
+﻿@model CinemaBookingApp.Models.Booking
 
 @{
     ViewData["Title"] = "Booking Summary";
+    var showTime = Model.ShowTime;
 }
 
 <div style="
@@ -14,9 +15,7 @@
     ">
 
     <div class="row justify-content-center">
-
         <div class="col-md-8">
-
             <div class="card shadow-lg"
                  style="
                 background:#2a2145;
@@ -25,144 +24,44 @@
                 box-shadow:0 0 20px rgba(255,45,85,.35);">
 
                 <div class="card-body p-5">
-
                     <h2 class="text-center text-white mb-4">
-
                         Booking Summary
-
                     </h2>
 
                     <hr style="border-color:red;" />
 
                     <div class="row mb-3">
-
-                        <div class="col-4 text-danger fw-bold">
-
-                            Movie
-
-                        </div>
-
-                        <div class="col-8 text-white">
-
-                            @Model.Movie?.Title
-
-                        </div>
-
+                        <div class="col-4 text-danger fw-bold">Movie</div>
+                        <div class="col-8 text-white">@(showTime?.Movie?.Title ?? "N/A")</div>
                     </div>
 
                     <div class="row mb-3">
-
-                        <div class="col-4 text-danger fw-bold">
-
-                            Date
-
-                        </div>
-
-                        <div class="col-8 text-white">
-
-                            @Model.Date.ToShortDateString()
-
-                        </div>
-
+                        <div class="col-4 text-danger fw-bold">Date</div>
+                        <div class="col-8 text-white">@(showTime?.Date.ToShortDateString() ?? "N/A")</div>
                     </div>
 
                     <div class="row mb-3">
-
-                        <div class="col-4 text-danger fw-bold">
-
-                            Time
-
-                        </div>
-
-                        <div class="col-8 text-white">
-
-                            @Model.Time
-
-                        </div>
-
+                        <div class="col-4 text-danger fw-bold">Time</div>
+                        <div class="col-8 text-white">@(showTime?.Time.ToString(@"hh\:mm") ?? "N/A")</div>
                     </div>
 
                     <div class="row mb-3">
-
-                        <div class="col-4 text-danger fw-bold">
-
-                            Hall
-
-                        </div>
-
-                        <div class="col-8 text-white">
-
-                            @Model.Hall?.HallName
-
-                        </div>
-
-                    </div>
-
-                    <div class="row mb-3">
-
-                        <div class="col-4 text-danger fw-bold">
-
-                            Seats
-
-                        </div>
-
-                        <div class="col-8 text-white">
-
-                            A1, A2
-
-                        </div>
-
-                    </div>
-
-                    <div class="row mb-3">
-
-                        <div class="col-4 text-danger fw-bold">
-
-                            Tickets
-
-                        </div>
-
-                        <div class="col-8 text-white">
-
-                            2
-
-                        </div>
-
+                        <div class="col-4 text-danger fw-bold">Hall</div>
+                        <div class="col-8 text-white">@(showTime?.Hall?.HallName ?? "N/A")</div>
                     </div>
 
                     <div class="row mb-4">
-
-                        <div class="col-4 text-danger fw-bold">
-
-                            Total Price
-
-                        </div>
-
-                        <div class="col-8 text-warning fw-bold">
-
-                            $@(Model.Price * 2)
-
-                        </div>
-
+                        <div class="col-4 text-danger fw-bold">Total Price</div>
+                        <div class="col-8 text-warning fw-bold">@Model.TotalPrice LYD</div>
                     </div>
 
                     <div class="text-center">
-
-                        <a asp-action="Payment"
-                            class="btn btn-danger btn-lg px-5">
-
+                        <a asp-action="Payment" class="btn btn-danger btn-lg px-5">
                             Continue To Payment
-
                         </a>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
